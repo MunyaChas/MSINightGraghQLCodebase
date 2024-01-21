@@ -1,0 +1,379 @@
+/ **************** Queries for Employee ******************* /
+
+
+/ ************ With GraphQL Variables ********************* /
+query GetAllEmployeesWithoutObjectTypes(
+  $first: Int,
+  $last: Int,
+  $after: String,
+  $before: String){
+  employees(
+    first: $first, 
+    last: $last, 
+    after: $after, 
+    before: $before){
+    edges{
+      node{
+        id{
+          value
+        }
+        name{
+          first
+          last
+        }        
+      }
+      cursor
+    }
+    pageInfo{
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+      __typename
+    }
+  }
+}
+
+{
+  "first": 20,
+  "after":null
+}
+
+/ ************* End With GraphQL Variables ***************** /
+
+
+query GetAllEmployees {
+    employees(first: 50  where: {    or: [
+      { name: { first: { startsWith: "J" } } },
+      { name: { first: { startsWith: "T" } } }
+    ]} ) {
+        edges { 
+            node {
+                id 
+                name
+                email
+                EmpId
+                qualifications {
+                  qualificationId
+                  nameOfQualification
+                }
+            } 
+            cursor
+        }
+        pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
+        }
+    }
+    
+}
+query GetEmployeeById {
+  employeeById(id: "RW1wbG95ZWUKZ2U4YWE5YjRmMTUxMjRlYzM5MzMxN2Y1MTUzOWYxZmIz"){
+    id
+    name
+    email
+    phone
+    qualifications {
+      nameOfQualification
+      institute
+      yearCompleted
+    }
+  }
+}
+query GetEmployeeByNae {
+  employeesByUserName(employeeName: "Adrienne")
+  {
+    name 
+    qualifications {
+      nameOfQualification
+    }
+  }
+}
+query GetByBatch {
+  a: employeesByUserName(employeeName: "John")
+  {
+    name
+    email
+    qualifications {
+      nameOfQualification
+    }
+  }
+  b: employeesByUserName(employeeName: "Pola")
+  {
+    name
+    qualifications {
+      nameOfQualification
+    }
+  }
+}
+
+query OurFirstQuery{
+    a: hello
+    b: hello
+}
+
+
+query GetAllEmployeesWithFiltering(
+  $first: Int,
+  $last: Int,
+  $after: String,
+  $before: String){
+  employees(
+    first: $first, 
+    last: $last, 
+    after: $after, 
+    before: $before,
+    where: {
+      qualifications: {
+        some: {
+          nameOfQualification: {
+            and:{
+              value: {
+                contains: "Comp"
+              }
+            }
+          }
+        }
+      }
+    }
+    ){
+    edges{
+      node{
+        id
+        name
+        qualifications{
+          qualificationId
+          nameOfQualification
+          institute
+          yearCompleted
+        }       
+      }
+      cursor
+    }
+    pageInfo{
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+      __typename
+    }
+  }
+}
+
+/ **************************** End Of Queries ********************************** /
+
+/ **************************** Mutations *************************************** /
+
+mutation AddEmployee($employee: AddEmployeeInput!) {
+  addEmployee(employee: $employee) {
+    employeePayload {
+      employee {
+        id
+        name
+        email
+        phone
+        EmpId
+        qualifications {
+          qualificationId
+          nameOfQualification
+          institute
+          yearCompleted
+        }
+        skillsMatrices {
+          skillsMatrixId
+          skill
+          skillLevel
+          yearsOfExperience
+        }
+      }   
+      errors {
+        message
+        code
+      }
+    }
+  }
+}
+
+GraphQL Request Body
+
+{
+  "employee": {
+    "firstName": "John",
+    "lastName": "Cena",
+    "email": "john.doe@example.com",
+    "phone": "+19-4384-763272",
+    "qualifications": [
+      {
+        "qualificationId": null,
+        "nameOfQualification": "Bachelor of Computer Science",
+        "institute": "Tech University",
+        "yearCompleted": 2018
+      },
+      {
+        "qualificationId": null,
+        "nameOfQualification": "Master of Computer Science",
+        "institute": "Tech University",
+        "yearCompleted": 2020
+      }
+    ]
+  }
+}
+
+
+mutation UpdateEmployee($employee: UpdateEmployeeInput!){
+  updateEmployee(input: $employee){
+    employeePayload {
+      employee {
+        id
+        name
+      }
+      errors {
+        code
+        message
+      }
+    }
+  }
+}
+
+{
+  "employee": {
+    "employeeId": "RW1wbG95ZWUKZ2NkZDYwNTQ2ZDQ5NDQ0ZjhiYTI2MjBhODJhMDQxNDRj",
+    "firstName": "John",
+    "lastName": "Cena",
+    "email": "john.doe@example.com",
+    "phone": "+19-4384-763273",
+    "qualifications": [
+      {
+        "nameOfQualification": "Bachelor of Computer Science 2",
+        "institute": "Tech University",
+        "yearCompleted": 2018
+      },
+      {
+        "nameOfQualification": "Master of Computer Science",
+        "institute": "Tech University",
+        "yearCompleted": 2020
+      }
+    ]
+  }
+}
+
+
+/ **************************************************** /
+				End Of Employee Operations
+/ **************************************************** /
+
+/ ************** Open Request Operations ************* /
+query GetOpenRequest {
+  openRequestBUs(first: 4) {
+    edges {
+      node {
+        id
+        positionName
+        competences {
+          Competence
+          yearsOfExperience
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+query GetOpenRequestById {
+  openRequestById(id: "T3BlblJlcXVlc3RCVQpnNTVhNzkzZjg1YWI1ODIyNmJkMGFiNWE2Yzk3ZmUyZjE=")
+  {
+    positionName
+    accountManager
+    skillLevel
+  }
+}
+query GetOpenRequestByPositionName {
+  openRequestByPositionName(openPositionName : "Engineering")
+  {
+    positionName
+    accountManager
+    skillLevel
+    positionDescription
+    competences {
+      Competence
+      yearsOfExperience
+    }
+  }
+}
+
+/ ********* End Of Open Request Operations *********** /
+
+/ ******** Match To Open Request *********** /
+
+query getAllMatchesToOpenRequests {
+  matchToOpenRequests {
+    edges {
+      node {
+        id
+        employee {
+          id
+          name
+        }
+        openRequest {
+          id
+          accountManager
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+query getMatchesToOpenRequestsByOpenRequestId {
+  matchToOpenByOpenRequestId(openRequestId: "T3BlblJlcXVlc3RCVQpnY2M3YTUxZWJmZTVjMmI5ZDFiNDAxNjViZTUyZGM5ZmI=") {
+    id 
+    employee {
+      id
+      
+    }
+  }
+}
+
+
+mutation AddMatchToOpenRequest($openrequest: AddMatchToOpenRequestInput!) {
+  addMatchToOpenRequest(input: $openrequest) {
+    matchToOpenRequestPayload {
+      matchToOpenRequest {
+        id
+      }
+      errors {
+        message
+        code
+      }
+    }
+  }
+}
+
+{
+  "openrequest": {
+    "openRequestId": "T3BlblJlcXVlc3RCVQpnNTVhNzkzZjg1YWI1ODIyNmJkMGFiNWE2Yzk3ZmUyZjE=",
+    "employeeId": "RW1wbG95ZWUKZ2UyYmE2NmVjOTc0YzRlZmJhZjAzNDE2Y2IxMmQyOWFk",
+    "matchScore": 0,
+    "interviewDate": null,
+    "applyForPosition": false,
+    "isClosed": false,
+    "isHired": false,
+    "isMatch": false,
+    "isOpen": true,
+    "isWithdrawn": false
+  }
+}
+
