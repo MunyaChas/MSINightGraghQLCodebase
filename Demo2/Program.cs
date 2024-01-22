@@ -19,8 +19,11 @@ services
         o => o.UseSqlServer(defaultConnectionString).UseLoggerFactory(CreateLoggerFactory()).EnableSensitiveDataLogging());
 services.AddCors();
 services.AddGraphQLServer()
-    .AddFiltering()
+        .AddFiltering()
+        .AddSorting()
         .AddTypes()
+        .AddGlobalObjectIdentification()
+        .AddProjections()
         .RegisterDbContext<Demo2DbContext>();
 var app = builder.Build();
 

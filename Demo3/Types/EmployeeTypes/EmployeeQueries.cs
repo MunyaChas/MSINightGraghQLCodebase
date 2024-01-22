@@ -5,6 +5,7 @@ namespace Demo3.Types.EmployeeTypes
     [QueryType]
     public static class EmployeeQueries
     {
+        [NodeResolver]
         public static async Task<Employee?> GetEmployeeById(Guid id, EmployeeByIdDataLoader dataLoader, CancellationToken cancellationToken)
         {
             return await dataLoader.LoadAsync(id, cancellationToken);
